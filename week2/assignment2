@@ -1,0 +1,49 @@
+def answer_one():
+    return df['Gold.1'].idxmax()
+
+def answer_two():
+    return (df['Gold.1']-df['Gold']).idxmax()
+
+def answer_three():
+    return ((df['Gold.1']-df['Gold'])/df['Combined total']).idxmax()
+
+def answer_four():
+    return df['Points']=3*df['Gold.2']+2*df['Silver.2']+1*df['Bronze.2']
+
+def answer_five():
+    return df[df['SUMLEV']==50].set_index(['STNAME','CTYNAME']).count(level='STNAME')['SUMLEV'].idxmax()
+
+def answer_six():
+    state_pop={}
+for state in df[df['SUMLEV']==50].set_index('STNAME').index.unique():
+    state_pop[state]=df[(df['STNAME']==state) & (df['SUMLEV']==50)].nlargest(3,'CENSUS2010POP').sum()['CENSUS2010POP']
+state_pop_sorted=sorted(state_pop.items(), key=lambda item: item[1], reverse=True)
+#state_pop_sorted[:3]
+answer = [name[0] for name in state_pop_sorted[:3]]
+    return answer
+
+
+def answer_seven():
+    df_copy=df_census[df_census['SUMLEV']==50].set_index(['STNAME','CTYNAME'])
+pop_change={}
+for index in df_copy.index:
+    #print(index)
+    pop=sorted([
+        df_copy.loc[index,'POPESTIMATE2010'],
+        df_copy.loc[index,'POPESTIMATE2011'],
+        df_copy.loc[index,'POPESTIMATE2012'],
+        df_copy.loc[index,'POPESTIMATE2013'],
+        df_copy.loc[index,'POPESTIMATE2014'],
+        df_copy.loc[index,'POPESTIMATE2015']])
+    pop_change[index]=pop[-1]-pop[0]
+pop_change_sort = sorted(pop_change.items(), key=lambda item:item[1], reverse=True)
+answer=pop_change_sort[0][0][1]
+    return answer
+
+
+def answer_eight():
+    df_select=df_census[((df_census['REGION']==1)|
+             (df_census['REGION']==2))&
+             (df_census['CTYNAME'].str.startswith('Washington'))&
+             (df_census['POPESTIMATE2015']>df_census['POPESTIMATE2014'])]
+    return df_select[['STNAME','CTYNAME']]
